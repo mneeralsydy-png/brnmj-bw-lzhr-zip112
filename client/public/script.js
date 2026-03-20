@@ -2,6 +2,12 @@
 // Private Dialer - Brain Logic (العقل البرمجي)
 // ================================================
 
+// عنوان الخادم: يُكتشف تلقائياً (Android أصلي = خادم بعيد، متصفح = نسبي)
+const IS_NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+const SERVER_URL = IS_NATIVE
+    ? 'https://9e4bba0b-cbbd-41e9-8a0a-c72422de8261-00-8jhfzowe8jcf.worf.replit.dev'
+    : '';
+
 // Firebase Config
 const firebaseConfig = {
     apiKey: "GOOGLE_API_KEY",
@@ -51,7 +57,7 @@ async function handleLogin() {
     if (!email || !pass) return showToast("أدخل البريد وكلمة المرور");
 
     try {
-        const res = await fetch('/api/login', {
+        const res = await fetch(SERVER_URL + '/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password: pass })
@@ -84,7 +90,7 @@ async function handleRegister() {
     if (pass.length < 6) return showToast("كلمة المرور قصيرة جداً (6 أحرف على الأقل)");
 
     try {
-        const res = await fetch('/api/register', {
+        const res = await fetch(SERVER_URL + '/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password: pass })
@@ -121,7 +127,7 @@ async function handleGoogleAuth() {
         const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
         const user = result.user;
         const token = await user.getIdToken();
-        const response = await fetch('/api/firebase-auth', {
+        const response = await fetch(SERVER_URL + '/api/firebase-auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ firebaseToken: token, email: user.email, uid: user.uid, displayName: user.displayName })
@@ -155,7 +161,7 @@ function enterMainApp() {
 async function loadUserData() {
     if (!localStorage.token) return;
     try {
-        const res = await fetch('/api/user', {
+        const res = await fetch(SERVER_URL + '/api/user', {
             headers: { Authorization: `Bearer ${localStorage.token}` }
         });
         const data = await res.json();
@@ -222,7 +228,7 @@ function toggleAlias() {
 async function initTwilio() {
     if (typeof Twilio === 'undefined') return;
     try {
-        const res = await fetch('/api/token', {
+        const res = await fetch(SERVER_URL + '/api/token', {
             headers: { Authorization: `Bearer ${localStorage.token}` }
         });
         const data = await res.json();
@@ -267,7 +273,7 @@ async function initiateRealCall() {
 
     // Fallback to REST API
     try {
-        const res = await fetch('/api/call', {
+        const res = await fetch(SERVER_URL + '/api/call', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -492,7 +498,7 @@ function renderLogs(type) {
 
 async function loadRecordings() {
     try {
-        const res = await fetch('/api/recordings', {
+        const res = await fetch(SERVER_URL + '/api/recordings', {
             headers: { Authorization: `Bearer ${localStorage.token}` }
         });
         const data = await res.json();
@@ -544,7 +550,7 @@ function switchMsgTab(tab) {
 
 async function loadSMSMessages() {
     try {
-        const res = await fetch('/api/sms/list', {
+        const res = await fetch(SERVER_URL + '/api/sms/list', {
             headers: { Authorization: `Bearer ${localStorage.token}` }
         });
         const data = await res.json();
@@ -577,7 +583,7 @@ async function sendNewMessage() {
     if (!to || !text) return showToast("أكمل الحقول");
 
     try {
-        const res = await fetch('/api/sms/send', {
+        const res = await fetch(SERVER_URL + '/api/sms/send', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -605,7 +611,7 @@ async function sendNewMessage() {
 
 async function loadAccountInfo() {
     try {
-        const res = await fetch('/api/user-info', {
+        const res = await fetch(SERVER_URL + '/api/user-info', {
             headers: { Authorization: `Bearer ${localStorage.token}` }
         });
         const data = await res.json();
@@ -638,7 +644,7 @@ function closeSubPage(pageId) {
 
 async function processPayment(amount) {
     try {
-        const res = await fetch('/api/topup', {
+        const res = await fetch(SERVER_URL + '/api/topup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

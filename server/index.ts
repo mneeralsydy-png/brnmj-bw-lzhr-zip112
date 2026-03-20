@@ -22,6 +22,27 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+// CORS - يسمح لتطبيق Android (Capacitor) بالتواصل مع الخادم
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    'capacitor://localhost',
+    'https://localhost',
+    'http://localhost',
+    'ionic://localhost',
+  ];
+  const origin = req.headers.origin || '';
+  if (allowedOrigins.includes(origin) || !origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
