@@ -14,8 +14,8 @@ if (typeof firebase !== 'undefined') {
     try { firebase.initializeApp(firebaseConfig); } catch(e) {}
 }
 
-const db = firebase ? firebase.database() : null;
-const auth = firebase ? firebase.auth() : null;
+const db = typeof firebase !== 'undefined' ? firebase.database() : null;
+const auth = typeof firebase !== 'undefined' ? firebase.auth() : null;
 
 let currentUser = null;
 let balance = 0;

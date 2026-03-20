@@ -1,8 +1,10 @@
 {
   "appId": "com.munir.abuzahra",
-  "appName": "Abu Zahra",
+  "appName": "أبو الزهراء",
   "webDir": "client",
   "server": {
+    "url": "https://9e4bba0b-cbbd-41e9-8a0a-c72422de8261-00-8jhfzowe8jcf.worf.replit.dev",
+    "cleartext": true,
     "androidScheme": "https"
   },
   "plugins": {
