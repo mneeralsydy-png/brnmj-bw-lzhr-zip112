@@ -1,0 +1,141 @@
+name: Abu Al-Zahra Final Success Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout Code ─────────────────────────────────────────────
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ── Set up Node.js ────────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # ── Install Dependencies ──────────────────────────────────────
+      - name: Install Dependencies
+        run: |
+          npm install
+          npm install -D typescript
+
+      # ── Capacitor Setup & Sync ────────────────────────────────────
+      - name: Capacitor Setup & Sync
+        run: |
+          rm -rf android
+          npx cap add android
+          npx cap sync android
+
+      # ── Create Google Services File ───────────────────────────────
+      - name: Create Google Services File
+        run: |
+          mkdir -p android/app
+          cat > android/app/google-services.json << 'EOF'
+          {
+            "project_info": {
+              "project_number": "982107544824",
+              "project_id": "call-now-24582",
+              "storage_bucket": "call-now-24582.firebasestorage.app"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:982107544824:android:abuzahra00000001",
+                  "android_client_info": {
+                    "package_name": "com.munir.abuzahra"
+                  }
+                },
+                "oauth_client": [
+                  {
+                    "client_id": "982107544824-android.apps.googleusercontent.com",
+                    "client_type": 1,
+                    "android_info": {
+                      "package_name": "com.munir.abuzahra"
+                    }
+                  },
+                  {
+                    "client_id": "982107544824-web.apps.googleusercontent.com",
+                    "client_type": 3
+                  }
+                ],
+                "api_key": [
+                  {
+                    "current_key": "AIzaSyD8hrO2kX1zXaA46PImzMGqOt4iTwhXKI0"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": [
+                      {
+                        "client_id": "982107544824-web.apps.googleusercontent.com",
+                        "client_type": 3
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+          echo "✅ google-services.json created"
+
+      # ── Force Fix Android Variables & SDK 36 ──────────────────────
+      - name: Force Fix Android Variables & SDK 36
+        run: |
+          cat > android/variables.gradle << 'EOF'
+          ext {
+              minSdkVersion = 23
+              compileSdkVersion = 36
+              targetSdkVersion = 36
+              androidxAppCompatVersion = '1.7.0'
+          }
+          EOF
+          echo "android.suppressUnsupportedCompileSdk=36" >> android/gradle.properties
+          echo "✅ Android variables and SDK 36 configured"
+
+      # ── Set up JDK 21 ─────────────────────────────────────────────
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # ── Build APK (Debug) ─────────────────────────────────────────
+      - name: Build APK (Debug)
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleDebug \
+            --no-daemon \
+            --stacktrace \
+            -Dorg.gradle.jvmargs="-Xmx4096m"
+
+      # ── Get SHA1 Key ──────────────────────────────────────────────
+      - name: Get SHA1 Key
+        run: |
+          keytool -list -v \
+            -keystore ~/.android/debug.keystore \
+            -alias androiddebugkey \
+            -storepass android \
+            -keypass android 2>/dev/null \
+          | grep "SHA1:" || echo "SHA1 key info not available"
+
+      # ── Upload APK Artifact ───────────────────────────────────────
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AbuZahra-Debug-${{ github.run_number }}
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+          if-no-files-found: error
+
