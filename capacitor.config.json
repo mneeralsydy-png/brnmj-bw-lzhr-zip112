@@ -1,7 +1,7 @@
 {
   "appId": "com.munir.abuzahra",
   "appName": "أبو الزهراء",
-  "webDir": "client",
+  "webDir": "dist/public",
   "server": {
     "androidScheme": "https",
     "cleartext": true
