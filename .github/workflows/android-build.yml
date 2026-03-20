@@ -36,11 +36,11 @@ jobs:
       - name: 🔄 Sync Capacitor to Android
         run: npx cap sync android
 
-      # ─── 6. Java 17 ──────────────────────────────────────────────────────────
-      - name: ☕ Setup Java 17
+      # ─── 6. Java 21 ──────────────────────────────────────────────────────────
+      - name: ☕ Setup Java 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       # ─── 7. Cache Gradle ─────────────────────────────────────────────────────
