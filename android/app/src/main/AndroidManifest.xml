@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.munir.abuzahra">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Required Internet Permission -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -23,14 +22,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Deep Linking / Scheme for Google Auth -->
-    <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="com.munir.abuzahra" />
-    </intent-filter>
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -40,11 +31,16 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="com.getcapacitor.myapp.MainActivity"
+            android:name="com.munir.abuzahra.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|screenLayout|uiMode"
             android:theme="@style/AppTheme.NoActionBarLaunch">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
             <!-- Deep Link Handling -->
             <intent-filter>
